@@ -2,7 +2,7 @@ stages:
   - push
   - deploy
 
-push_docker:
+push:docker:
   stage: push
   image:
     name: gcr.io/kaniko-project/executor:debug
