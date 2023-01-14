@@ -2,6 +2,9 @@ stages:
   - push
   - deploy
 
+variables:
+  IMAGE_TAG: $CI_COMMIT_BRANCH.$CI_PIPELINE_ID
+
 push:docker:
   stage: push
   image:
@@ -11,3 +14,17 @@ push:docker:
     - mkdir -p /kaniko/.docker
     - echo "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$(echo -n ${CI_REGISTRY_USER}:${CI_REGISTRY_PASSWORD} | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
     - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile --destination $CI_REGISTRY/emil.juchnikowski/argocd-gitlab-example:$CI_COMMIT_BRANCH.$CI_PIPELINE_ID --cache=true --build-arg "BUILD_VERSION=$CI_PIPELINE_ID"
+
+deploy:qa:
+  stage: deploy
+  image: node:16
+  needs:
+    - push:docker
+  script:
+    - npm install -g envsub
+    - git config --global user.name "${GITLAB_USER_NAME}"
+    - git config --global user.email "${GITLAB_USER_EMAIL}"
+    - envsub --env TAG=$(echo $IMAGE_TAG) deploy/deploy.yampl__template deploy/deploy.yaml
+    - git add deploy/deploy.yaml
+    - git commit -m "change image tag $IMAGE_TAG"
+    - git push origin HEAD:$CI_COMMIT_BRANCH -o ci.skip

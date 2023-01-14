@@ -1,0 +1,23 @@
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deploy-main-api
+spec:
+  selector:
+    matchLabels:
+      name: deploy-app-api
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        name: deploy-app-api
+    spec:
+      containers:
+        - name: api
+          image: gitlab-registry.smartsoft.biz.pl/emil.juchnikowski/argocd-gitlab-example:${TAG}
+          ports:
+            - containerPort: 3000
