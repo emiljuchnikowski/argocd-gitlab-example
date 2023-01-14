@@ -4,6 +4,7 @@ stages:
 
 variables:
   IMAGE_TAG: $CI_COMMIT_BRANCH.$CI_PIPELINE_ID
+  SERVER_TOKEN: $SERVER_TOKEN
 
 push:docker:
   stage: push
@@ -27,4 +28,4 @@ deploy:qa:
     - envsub --env TAG=$(echo $IMAGE_TAG) deploy/deploy.yaml__template deploy/deploy.yaml
     - git add deploy/deploy.yaml
     - git commit -m "change image tag $IMAGE_TAG"
-    - git push origin HEAD:$CI_COMMIT_BRANCH -o ci.skip
+    - git push origin $CI_COMMIT_BRANCH -o ci.skip
