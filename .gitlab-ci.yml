@@ -21,6 +21,9 @@ deploy:qa:
   image: node:16
   needs:
     - push:docker
+  only:
+    refs:
+      - main
   script:
     - npm install -g envsub
     - git config --global user.name "${GITLAB_USER_NAME}"
@@ -28,4 +31,4 @@ deploy:qa:
     - envsub --env TAG=$(echo $IMAGE_TAG) deploy/deploy.yaml__template deploy/deploy.yaml
     - git add deploy/deploy.yaml
     - git commit -m "change image tag $IMAGE_TAG"
-    - git push origin $CI_COMMIT_BRANCH -o ci.skip
+    - git push origin main -o ci.skip
