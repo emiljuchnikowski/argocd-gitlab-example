@@ -24,7 +24,7 @@ deploy:qa:
     - npm install -g envsub
     - git config --global user.name "${GITLAB_USER_NAME}"
     - git config --global user.email "${GITLAB_USER_EMAIL}"
-    - envsub --env TAG=$(echo $IMAGE_TAG) deploy/deploy.yampl__template deploy/deploy.yaml
+    - envsub --env TAG=$(echo $IMAGE_TAG) deploy/deploy.yaml__template deploy/deploy.yaml
     - git add deploy/deploy.yaml
     - git commit -m "change image tag $IMAGE_TAG"
     - git push origin HEAD:$CI_COMMIT_BRANCH -o ci.skip
